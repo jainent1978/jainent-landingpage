@@ -264,12 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Contact Form Submission with WhatsApp integration
+  // 5. Contact Form Submission with Google Sheet & WhatsApp integration
+  const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby3ArfWsG-24hHX41bpsIXvTALQ1bOk8Np61pNh6oFnbbdMNvQCeyfVtO7DTJFV1OtO7Q/exec';
   const contactForm = document.getElementById('contact-form');
   const formSuccessBanner = document.getElementById('form-success-banner');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const name = document.getElementById('form-name')?.value.trim();
@@ -283,7 +284,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Compose WhatsApp inquiry
+      const submitBtn = contactForm.querySelector('.btn-form-submit');
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>Send Message</span><span>&rarr;</span>';
+      
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Saving details...</span>';
+      }
+
+      // 1. Post lead data to Google Sheet via Google Apps Script
+      if (GOOGLE_SHEET_WEBAPP_URL) {
+        try {
+          const params = new URLSearchParams({
+            name: name,
+            phone: phone,
+            email: email,
+            category: category,
+            message: message
+          });
+
+          await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params.toString()
+          });
+        } catch (sheetErr) {
+          console.warn('Google Sheet log warning:', sheetErr);
+        }
+      }
+
+      // 2. Compose WhatsApp inquiry for direct messaging
       const fullText = `*New Website Inquiry - Jain Enterprises*\n\n` +
         `👤 *Name:* ${name}\n` +
         `📞 *Phone:* ${phone}\n` +
@@ -293,16 +326,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const waUrl = `https://wa.me/916378800224?text=${encodeURIComponent(fullText)}`;
 
-      // Show in-page confirmation
+      // 3. Show clean in-page confirmation
       if (formSuccessBanner) {
+        const safeName = document.createElement('div');
+        safeName.textContent = name;
+        formSuccessBanner.innerHTML = `✓ Thank you, <strong>${safeName.innerHTML}</strong>! Your inquiry details have been saved. Opening WhatsApp to connect directly with our sales team...`;
         formSuccessBanner.style.display = 'block';
         formSuccessBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      // Reset form
+      // 4. Reset form & restore button
       contactForm.reset();
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
 
-      // Automatically open WhatsApp in new tab for direct resolution
+      // 5. Automatically open WhatsApp in new tab for direct resolution
       window.open(waUrl, '_blank');
     });
   }
