@@ -347,79 +347,79 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5b. Log Direct WhatsApp Button Clicks to Google Sheet
+  // 5b. Universal WhatsApp Click Logger to Google Sheet
+  let lastWaClickTime = 0;
   function logWhatsAppClick(category, message) {
     if (!GOOGLE_SHEET_WEBAPP_URL) return;
-    try {
-      const params = new URLSearchParams({
-        name: 'Direct WhatsApp Visitor',
-        phone: 'Incoming on WhatsApp (+91 63788 00224)',
-        email: 'Direct WhatsApp Chat',
-        category: category,
-        message: message
-      });
 
-      fetch(GOOGLE_SHEET_WEBAPP_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        keepalive: true,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
-      }).catch(() => {});
-    } catch (e) {
-      // ignore tracking failure
+    // 5-second debounce to prevent duplicate spamming
+    const now = Date.now();
+    if (now - lastWaClickTime < 5000) return;
+    lastWaClickTime = now;
+
+    const params = new URLSearchParams({
+      name: 'Direct WhatsApp Visitor',
+      phone: 'Incoming on WhatsApp (+91 63788 00224)',
+      email: 'Direct WhatsApp Chat',
+      category: category,
+      message: message
+    });
+
+    // Method A: navigator.sendBeacon (most reliable for link clicks, never cancelled by browser)
+    let beaconSent = false;
+    if (navigator.sendBeacon) {
+      try {
+        beaconSent = navigator.sendBeacon(GOOGLE_SHEET_WEBAPP_URL, params);
+      } catch (err) {
+        beaconSent = false;
+      }
+    }
+
+    // Method B: Fallback to standard fetch (same proven request format as contact form)
+    if (!beaconSent) {
+      try {
+        fetch(GOOGLE_SHEET_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        }).catch(() => {});
+      } catch (e) {}
     }
   }
 
-  // Header Top WhatsApp button
-  const headerWaBtn = document.querySelector('.btn-header-whatsapp');
-  if (headerWaBtn) {
-    let lastHeaderClick = 0;
-    headerWaBtn.addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastHeaderClick < 10000) return;
-      lastHeaderClick = now;
-      logWhatsAppClick('Top Header WhatsApp Button', 'Customer clicked top navbar WhatsApp button to start direct chat.');
-    });
-  }
+  // Intercept ALL WhatsApp button/link clicks across the whole page
+  document.addEventListener('click', (e) => {
+    const waLink = e.target.closest('a[href*="wa.me"]');
+    if (!waLink) return;
 
-  // Floating green WhatsApp button
-  const floatingWaBtn = document.querySelector('.floating-whatsapp-btn');
-  if (floatingWaBtn) {
-    let lastWaClick = 0;
-    floatingWaBtn.addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastWaClick < 10000) return;
-      lastWaClick = now;
-      logWhatsAppClick('Floating WhatsApp Button', 'Customer clicked floating WhatsApp button to start direct conversation.');
-    });
-  }
+    let category = 'Direct WhatsApp Link';
+    let message = 'Customer clicked a WhatsApp link on the website.';
 
-  // Electrician Booking WhatsApp button
-  const electricianWaBtn = document.querySelector('.btn-electrician-wa');
-  if (electricianWaBtn) {
-    let lastElectClick = 0;
-    electricianWaBtn.addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastElectClick < 10000) return;
-      lastElectClick = now;
-      logWhatsAppClick('Book Electrician Button', 'Customer clicked Book Electrician button to arrange fitting and installation.');
-    });
-  }
+    if (waLink.classList.contains('btn-header-whatsapp')) {
+      category = 'Top Header WhatsApp Button';
+      message = 'Customer clicked top navbar WhatsApp button to start direct chat.';
+    } else if (waLink.classList.contains('floating-whatsapp-btn')) {
+      category = 'Floating WhatsApp Button';
+      message = 'Customer clicked floating green WhatsApp button to chat.';
+    } else if (waLink.classList.contains('btn-electrician-wa')) {
+      category = 'Book Electrician Button';
+      message = 'Customer clicked Book Electrician button for fitting/installation.';
+    } else if (waLink.id === 'modal-whatsapp-btn') {
+      category = 'Product Modal WhatsApp Button';
+      message = 'Customer clicked Inquire on WhatsApp inside product details modal.';
+    } else if (waLink.closest('.mobile-nav-drawer')) {
+      category = 'Mobile Drawer WhatsApp Button';
+      message = 'Customer clicked mobile menu WhatsApp button.';
+    } else if (waLink.closest('.hero-section')) {
+      category = 'Hero WhatsApp Button';
+      message = 'Customer clicked hero section WhatsApp button.';
+    }
 
-  // Modal Inquire WhatsApp button
-  const modalWaBtn = document.getElementById('modal-whatsapp-btn');
-  if (modalWaBtn) {
-    let lastModalClick = 0;
-    modalWaBtn.addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastModalClick < 10000) return;
-      lastModalClick = now;
-      logWhatsAppClick('Product Modal WhatsApp Button', 'Customer clicked Inquire on WhatsApp inside product details modal.');
-    });
-  }
+    logWhatsAppClick(category, message);
+  });
 
   // 6. Light Bulb Day / Night Mode Toggle
   const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
