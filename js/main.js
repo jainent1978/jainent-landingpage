@@ -347,41 +347,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5b. Log Direct WhatsApp Floating & Electrician Button Clicks to Google Sheet
+  // 5b. Log Direct WhatsApp Button Clicks to Google Sheet
+  function logWhatsAppClick(category, message) {
+    if (!GOOGLE_SHEET_WEBAPP_URL) return;
+    try {
+      const params = new URLSearchParams({
+        name: 'Direct WhatsApp Visitor',
+        phone: 'Incoming on WhatsApp (+91 63788 00224)',
+        email: 'Direct WhatsApp Chat',
+        category: category,
+        message: message
+      });
+
+      fetch(GOOGLE_SHEET_WEBAPP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+      }).catch(() => {});
+    } catch (e) {
+      // ignore tracking failure
+    }
+  }
+
+  // Header Top WhatsApp button
+  const headerWaBtn = document.querySelector('.btn-header-whatsapp');
+  if (headerWaBtn) {
+    let lastHeaderClick = 0;
+    headerWaBtn.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastHeaderClick < 10000) return;
+      lastHeaderClick = now;
+      logWhatsAppClick('Top Header WhatsApp Button', 'Customer clicked top navbar WhatsApp button to start direct chat.');
+    });
+  }
+
+  // Floating green WhatsApp button
   const floatingWaBtn = document.querySelector('.floating-whatsapp-btn');
   if (floatingWaBtn) {
     let lastWaClick = 0;
     floatingWaBtn.addEventListener('click', () => {
       const now = Date.now();
-      if (now - lastWaClick < 10000) return; // Prevent duplicate row within 10s
+      if (now - lastWaClick < 10000) return;
       lastWaClick = now;
-
-      if (GOOGLE_SHEET_WEBAPP_URL) {
-        try {
-          const params = new URLSearchParams({
-            name: 'Direct WhatsApp Visitor',
-            phone: 'Incoming on WhatsApp (+91 63788 00224)',
-            email: 'Direct WhatsApp Chat',
-            category: 'Floating WhatsApp Button',
-            message: 'Customer clicked floating WhatsApp button to start direct conversation.'
-          });
-
-          fetch(GOOGLE_SHEET_WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            keepalive: true,
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: params.toString()
-          }).catch(() => {});
-        } catch (e) {
-          // ignore tracking failure
-        }
-      }
+      logWhatsAppClick('Floating WhatsApp Button', 'Customer clicked floating WhatsApp button to start direct conversation.');
     });
   }
 
+  // Electrician Booking WhatsApp button
   const electricianWaBtn = document.querySelector('.btn-electrician-wa');
   if (electricianWaBtn) {
     let lastElectClick = 0;
@@ -389,30 +405,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const now = Date.now();
       if (now - lastElectClick < 10000) return;
       lastElectClick = now;
+      logWhatsAppClick('Book Electrician Button', 'Customer clicked Book Electrician button to arrange fitting and installation.');
+    });
+  }
 
-      if (GOOGLE_SHEET_WEBAPP_URL) {
-        try {
-          const params = new URLSearchParams({
-            name: 'Direct WhatsApp Visitor',
-            phone: 'Incoming on WhatsApp (+91 63788 00224)',
-            email: 'Direct WhatsApp Chat',
-            category: 'Book Electrician Button',
-            message: 'Customer clicked Book Electrician button to arrange fitting and installation.'
-          });
-
-          fetch(GOOGLE_SHEET_WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            keepalive: true,
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: params.toString()
-          }).catch(() => {});
-        } catch (e) {
-          // ignore tracking failure
-        }
-      }
+  // Modal Inquire WhatsApp button
+  const modalWaBtn = document.getElementById('modal-whatsapp-btn');
+  if (modalWaBtn) {
+    let lastModalClick = 0;
+    modalWaBtn.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastModalClick < 10000) return;
+      lastModalClick = now;
+      logWhatsAppClick('Product Modal WhatsApp Button', 'Customer clicked Inquire on WhatsApp inside product details modal.');
     });
   }
 
