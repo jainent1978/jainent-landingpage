@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5b. Log Direct WhatsApp Floating Button Clicks to Google Sheet
+  // 5b. Log Direct WhatsApp Floating & Electrician Button Clicks to Google Sheet
   const floatingWaBtn = document.querySelector('.floating-whatsapp-btn');
   if (floatingWaBtn) {
     let lastWaClick = 0;
@@ -364,6 +364,40 @@ document.addEventListener('DOMContentLoaded', () => {
             email: 'Direct WhatsApp Chat',
             category: 'Floating WhatsApp Button',
             message: 'Customer clicked floating WhatsApp button to start direct conversation.'
+          });
+
+          fetch(GOOGLE_SHEET_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            keepalive: true,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params.toString()
+          }).catch(() => {});
+        } catch (e) {
+          // ignore tracking failure
+        }
+      }
+    });
+  }
+
+  const electricianWaBtn = document.querySelector('.btn-electrician-wa');
+  if (electricianWaBtn) {
+    let lastElectClick = 0;
+    electricianWaBtn.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastElectClick < 10000) return;
+      lastElectClick = now;
+
+      if (GOOGLE_SHEET_WEBAPP_URL) {
+        try {
+          const params = new URLSearchParams({
+            name: 'Direct WhatsApp Visitor',
+            phone: 'Incoming on WhatsApp (+91 63788 00224)',
+            email: 'Direct WhatsApp Chat',
+            category: 'Book Electrician Button',
+            message: 'Customer clicked Book Electrician button to arrange fitting and installation.'
           });
 
           fetch(GOOGLE_SHEET_WEBAPP_URL, {
