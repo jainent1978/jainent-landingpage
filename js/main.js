@@ -656,49 +656,60 @@ document.addEventListener('DOMContentLoaded', () => {
     revealElements.forEach(el => el.classList.add('is-revealed'));
   }
 
-  // 7e. Live Metric Counter Animation
-  const statNumbers = document.querySelectorAll('.stat-number');
-  if ('IntersectionObserver' in window && statNumbers.length > 0) {
-    let statsAnimated = false;
-    const statsContainer = document.querySelector('.hero-stats-row');
+  // 7e. Showroom Ambient Parallax & Hotspot Interactions
+  const showroomBg = document.querySelector('.hero-showroom-bg-layer');
+  const heroSection = document.getElementById('home');
+  if (!isTouchDevice && showroomBg && heroSection) {
+    let targetX = 0;
+    let targetY = 0;
+    let currentParallaxX = 0;
+    let currentParallaxY = 0;
+    let isParallaxActive = false;
 
-    const animateCounters = () => {
-      statNumbers.forEach(stat => {
-        const target = parseInt(stat.getAttribute('data-target'), 10) || 0;
-        const duration = 1800;
-        const startTime = performance.now();
-
-        const updateCounter = (currentTime) => {
-          const elapsed = currentTime - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const easeOut = 1 - Math.pow(1 - progress, 3);
-          const currentCount = Math.floor(easeOut * target);
-
-          if (target >= 1000) {
-            stat.textContent = currentCount.toLocaleString();
-          } else {
-            stat.textContent = currentCount;
-          }
-
-          if (progress < 1) {
-            requestAnimationFrame(updateCounter);
-          } else {
-            stat.textContent = target >= 1000 ? target.toLocaleString() : target;
-          }
-        };
-        requestAnimationFrame(updateCounter);
-      });
-    };
-
-    const statsObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !statsAnimated) {
-        statsAnimated = true;
-        animateCounters();
-        statsObserver.disconnect();
+    heroSection.addEventListener('mousemove', (e) => {
+      const rect = heroSection.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width - 0.5;
+      const relY = (e.clientY - rect.top) / rect.height - 0.5;
+      targetX = relX * -20;
+      targetY = relY * -14;
+      if (!isParallaxActive) {
+        isParallaxActive = true;
+        updateParallax();
       }
-    }, { threshold: 0.2 });
+    });
 
-    if (statsContainer) statsObserver.observe(statsContainer);
+    heroSection.addEventListener('mouseleave', () => {
+      targetX = 0;
+      targetY = 0;
+    });
+
+    function updateParallax() {
+      if (!isParallaxActive) return;
+      currentParallaxX += (targetX - currentParallaxX) * 0.08;
+      currentParallaxY += (targetY - currentParallaxY) * 0.08;
+      showroomBg.style.transform = `scale(1.04) translate3d(${currentParallaxX.toFixed(1)}px, ${currentParallaxY.toFixed(1)}px, 0)`;
+
+      if (Math.abs(targetX - currentParallaxX) > 0.1 || Math.abs(targetY - currentParallaxY) > 0.1) {
+        requestAnimationFrame(updateParallax);
+      } else {
+        isParallaxActive = false;
+      }
+    }
+  }
+
+  // Hotspots click/tap toggle
+  const hotspots = document.querySelectorAll('.showroom-hotspot');
+  if (hotspots.length > 0) {
+    hotspots.forEach(spot => {
+      spot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hotspots.forEach(s => { if (s !== spot) s.classList.remove('is-active'); });
+        spot.classList.toggle('is-active');
+      });
+    });
+    document.addEventListener('click', () => {
+      hotspots.forEach(s => s.classList.remove('is-active'));
+    });
   }
 
   // 7f. Magnetic Button Pull Physics & Micro-Haptic Click Waves

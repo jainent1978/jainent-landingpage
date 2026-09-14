@@ -16,7 +16,7 @@
   <link rel="icon" type="image/png" href="brand/logoimage.png" />
 
   <!-- Master Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=2.0" />
+  <link rel="stylesheet" href="css/styles.css?v=2.1" />
 </head>
 <body>
 
@@ -135,24 +135,57 @@
     <div class="hero-light-beam" aria-hidden="true"></div>
     <canvas id="hero-particles" class="hero-particles-canvas" aria-hidden="true"></canvas>
 
+    <!-- Animated Photorealistic Luxury Showroom Background -->
+    <div class="hero-showroom-bg-wrap" aria-hidden="true">
+      <div class="hero-showroom-bg-layer"></div>
+      <div class="hero-showroom-overlay"></div>
+    </div>
+
+    <!-- Interactive Real Showroom Hotspots (Desktop/Tablet) -->
+    <div class="showroom-hotspots-layer" aria-hidden="true">
+      <div class="showroom-hotspot hotspot-chandelier" style="top: 26%; left: 51%;">
+        <span class="hotspot-pulse"></span>
+        <span class="hotspot-core"></span>
+        <div class="hotspot-tooltip">
+          <strong>Crystal Chandeliers &amp; Pendants</strong>
+          <span>Warm 3000K ambient luxury illumination</span>
+        </div>
+      </div>
+      <div class="showroom-hotspot hotspot-switches" style="top: 56%; left: 18%;">
+        <span class="hotspot-pulse"></span>
+        <span class="hotspot-core"></span>
+        <div class="hotspot-tooltip">
+          <strong>Modular Touch Wall Gallery</strong>
+          <span>Legrand, Schneider &amp; Goldmedal displays</span>
+        </div>
+      </div>
+      <div class="showroom-hotspot hotspot-fans" style="top: 28%; right: 26%;">
+        <span class="hotspot-pulse"></span>
+        <span class="hotspot-core"></span>
+        <div class="hotspot-tooltip">
+          <strong>BLDC Smart Designer Fans</strong>
+          <span>Whisper-quiet, 65% energy saving</span>
+        </div>
+      </div>
+    </div>
+
     <div class="container hero-content-wrapper">
       <!-- Left Column: Hero Text & CTAs -->
       <div class="hero-text-block">
-        <div class="hero-badge-tag">
-          <span>Quality Products</span>
-          <span>•</span>
-          <span>Trusted Brands</span>
-          <span>•</span>
-          <span>Local Support</span>
+        <div class="hero-live-badge">
+          <span class="live-pulse-dot"></span>
+          <span class="badge-text">SUMERPUR EXPERIENCE STORE</span>
+          <span class="badge-sep">•</span>
+          <span class="badge-sub">EST. 1978</span>
         </div>
 
         <h1 class="hero-headline">
-          Complete Electrical<br />
-          Solutions <span class="gold-text">Under One Roof</span>
+          Complete Electrical &amp; Lighting<br />
+          <span class="gold-text">Solutions Under One Roof</span>
         </h1>
 
         <p class="hero-subheadline">
-          Lights, Fans, Geysers, Wires, Electrical Hardware &amp; More for Homes, Offices and Commercial Spaces.
+          Chandeliers, Smart BLDC Fans, Modular Touch Switches, Cables &amp; Hardware. Experience 500+ live working fixtures at our Sumerpur showroom.
         </p>
 
         <div class="hero-cta-group">
@@ -163,40 +196,58 @@
             <span>Chat on WhatsApp</span>
             <span>&rarr;</span>
           </a>
-        </div>
-
-        <!-- Live Cinematic Metric Counters -->
-        <div class="hero-stats-row">
-          <div class="hero-stat-item">
-            <div class="stat-number-wrap">
-              <span class="stat-number" data-target="45">0</span><span class="stat-suffix">+</span>
-            </div>
-            <span class="stat-label">Years of Trust</span>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div class="hero-stat-item">
-            <div class="stat-number-wrap">
-              <span class="stat-number" data-target="10000">0</span><span class="stat-suffix">+</span>
-            </div>
-            <span class="stat-label">Happy Clients</span>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div class="hero-stat-item">
-            <div class="stat-number-wrap">
-              <span class="stat-number" data-target="100">0</span><span class="stat-suffix">%</span>
-            </div>
-            <span class="stat-label">Genuine Brands</span>
-          </div>
+          <a href="#contact" class="btn-hero-secondary">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Visit Showroom</span>
+          </a>
         </div>
       </div>
 
-      <!-- Right Column: Stylized Cursive Accent (from reference design) -->
-      <div class="hero-script-accent" aria-hidden="true">
-        <div class="script-text">
-          Better<br />
-          Spaces<br />
-          <span class="gold">Brighter</span><br />
-          Lives
+      <!-- Right Column: Canva-Style Luxury Showroom Glass Card -->
+      <div class="hero-showroom-card" data-tilt>
+        <div class="showroom-card-header">
+          <div class="showroom-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <div class="showroom-card-meta">
+            <span class="showroom-badge-status"><span class="status-dot"></span> LIVE SHOWROOM</span>
+            <h3 class="showroom-card-title">Sumerpur Experience Studio</h3>
+          </div>
+        </div>
+        <p class="showroom-card-desc">Walk in to test &amp; experience 500+ architectural fixtures live before choosing for your home or project.</p>
+        <div class="showroom-features-list">
+          <div class="showroom-feature-tag">
+            <span class="tag-icon">✨</span>
+            <span>Chandelier &amp; Pendant Studio</span>
+          </div>
+          <div class="showroom-feature-tag">
+            <span class="tag-icon">⚡</span>
+            <span>Modular Touch Switch Wall</span>
+          </div>
+          <div class="showroom-feature-tag">
+            <span class="tag-icon">🌪️</span>
+            <span>BLDC Designer Smart Fans</span>
+          </div>
+          <div class="showroom-feature-tag">
+            <span class="tag-icon">🔌</span>
+            <span>Cables, MCBs &amp; Hardware</span>
+          </div>
+        </div>
+        <div class="showroom-card-footer">
+          <div class="showroom-loc">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Station Road, Sumerpur</span>
+          </div>
+          <a href="#contact" class="showroom-card-action">Directions &rarr;</a>
         </div>
       </div>
     </div>
@@ -832,6 +883,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/main.js?v=2.0"></script>
+  <script src="js/main.js?v=2.1"></script>
 </body>
 </html>
