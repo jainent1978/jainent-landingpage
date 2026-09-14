@@ -472,4 +472,272 @@ document.addEventListener('DOMContentLoaded', () => {
       closeDrawer();
     }
   });
+
+  // ==========================================================================
+  // 7. CINEMATIC PHYSICS & ANIMATION ENGINE
+  // ==========================================================================
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+  // 7a. Floating Golden Filament Micro-Particles in Hero
+  const particleCanvas = document.getElementById('hero-particles');
+  if (particleCanvas) {
+    const ctx = particleCanvas.getContext('2d');
+    let width = (particleCanvas.width = particleCanvas.offsetWidth || window.innerWidth);
+    let height = (particleCanvas.height = particleCanvas.offsetHeight || 650);
+    let animationFrameId;
+    let isHeroVisible = true;
+
+    window.addEventListener('resize', () => {
+      width = particleCanvas.width = particleCanvas.offsetWidth || window.innerWidth;
+      height = particleCanvas.height = particleCanvas.offsetHeight || 650;
+    }, { passive: true });
+
+    const heroSection = document.getElementById('home');
+    if ('IntersectionObserver' in window && heroSection) {
+      const heroObserver = new IntersectionObserver((entries) => {
+        isHeroVisible = entries[0].isIntersecting;
+        if (isHeroVisible && !animationFrameId) {
+          loop();
+        }
+      }, { threshold: 0.05 });
+      heroObserver.observe(heroSection);
+    }
+
+    const particles = [];
+    const particleCount = window.innerWidth < 768 ? 18 : 36;
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 0.8,
+        speedY: Math.random() * 0.35 + 0.15,
+        speedX: (Math.random() - 0.5) * 0.25,
+        opacity: Math.random() * 0.5 + 0.2,
+        pulseSpeed: Math.random() * 0.02 + 0.008,
+        pulseVal: Math.random() * Math.PI,
+      });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.pulseVal += p.pulseSpeed;
+        const currentOpacity = p.opacity + Math.sin(p.pulseVal) * 0.2;
+        const safeOpacity = Math.max(0.08, Math.min(0.85, currentOpacity));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(235, 195, 110, ${safeOpacity})`;
+        ctx.shadowColor = 'rgba(212, 166, 74, 0.75)';
+        ctx.shadowBlur = p.radius * 3.5;
+        ctx.fill();
+
+        p.y -= p.speedY;
+        p.x += p.speedX;
+
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+      }
+    }
+
+    function loop() {
+      if (!isHeroVisible) {
+        animationFrameId = null;
+        return;
+      }
+      drawParticles();
+      animationFrameId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  // 7b. 3D Physical Card Tilt & Dynamic Specular Glare (Desktop)
+  const tiltCards = document.querySelectorAll('[data-tilt]');
+  if (!isTouchDevice && tiltCards.length > 0) {
+    tiltCards.forEach(card => {
+      let glare = card.querySelector('.tilt-glare');
+      if (!glare) {
+        glare = document.createElement('div');
+        glare.className = 'tilt-glare';
+        card.appendChild(glare);
+      }
+
+      let isHovered = false;
+
+      card.addEventListener('mouseenter', () => {
+        isHovered = true;
+        glare.style.opacity = '1';
+      });
+
+      card.addEventListener('mousemove', (e) => {
+        if (!isHovered) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -8.5;
+        const rotateY = ((x - centerX) / centerX) * 8.5;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+
+        const glareX = (x / rect.width) * 100;
+        const glareY = (y / rect.height) * 100;
+        glare.style.background = `radial-gradient(circle at ${glareX.toFixed(1)}% ${glareY.toFixed(1)}%, rgba(255, 255, 255, 0.22) 0%, transparent 65%)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        isHovered = false;
+        glare.style.opacity = '0';
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      });
+    });
+  }
+
+  // 7c. Ambient Cursor Torch Glow (Desktop Only)
+  const cursorGlow = document.getElementById('cursor-glow');
+  if (cursorGlow && !isTouchDevice) {
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let currentX = -1000;
+    let currentY = -1000;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (currentX === -1000) {
+        currentX = mouseX;
+        currentY = mouseY;
+      }
+    }, { passive: true });
+
+    const renderCursorGlow = () => {
+      currentX += (mouseX - currentX) * 0.12;
+      currentY += (mouseY - currentY) * 0.12;
+      cursorGlow.style.transform = `translate3d(${currentX.toFixed(1)}px, ${currentY.toFixed(1)}px, 0)`;
+      requestAnimationFrame(renderCursorGlow);
+    };
+    renderCursorGlow();
+  }
+
+  // 7d. Cinematic Film Scroll Reveals
+  const revealElements = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window && revealElements.length > 0) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -30px 0px'
+    });
+
+    revealElements.forEach(el => {
+      const parentGrid = el.closest('.categories-grid, .features-matrix');
+      if (parentGrid) {
+        const siblingIndex = Array.from(parentGrid.children).indexOf(el);
+        if (siblingIndex > 0) {
+          el.style.transitionDelay = `${(siblingIndex % 3) * 0.08}s`;
+        }
+      }
+      revealObserver.observe(el);
+    });
+  } else {
+    revealElements.forEach(el => el.classList.add('is-revealed'));
+  }
+
+  // 7e. Live Metric Counter Animation
+  const statNumbers = document.querySelectorAll('.stat-number');
+  if ('IntersectionObserver' in window && statNumbers.length > 0) {
+    let statsAnimated = false;
+    const statsContainer = document.querySelector('.hero-stats-row');
+
+    const animateCounters = () => {
+      statNumbers.forEach(stat => {
+        const target = parseInt(stat.getAttribute('data-target'), 10) || 0;
+        const duration = 1800;
+        const startTime = performance.now();
+
+        const updateCounter = (currentTime) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          const currentCount = Math.floor(easeOut * target);
+
+          if (target >= 1000) {
+            stat.textContent = currentCount.toLocaleString();
+          } else {
+            stat.textContent = currentCount;
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+          } else {
+            stat.textContent = target >= 1000 ? target.toLocaleString() : target;
+          }
+        };
+        requestAnimationFrame(updateCounter);
+      });
+    };
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !statsAnimated) {
+        statsAnimated = true;
+        animateCounters();
+        statsObserver.disconnect();
+      }
+    }, { threshold: 0.2 });
+
+    if (statsContainer) statsObserver.observe(statsContainer);
+  }
+
+  // 7f. Magnetic Button Pull Physics & Micro-Haptic Click Waves
+  const magneticButtons = document.querySelectorAll('.btn-hero-primary, .btn-electrician-wa, .floating-whatsapp-btn');
+  if (!isTouchDevice && magneticButtons.length > 0) {
+    magneticButtons.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate3d(${x * 0.22}px, ${y * 0.22}px, 0)`;
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
+  }
+
+  // Click ripple wave
+  document.addEventListener('click', (e) => {
+    const clickable = e.target.closest('button, .btn-hero-primary, .btn-hero-secondary, .btn-why-us, .btn-directions, .btn-electrician-wa, .floating-whatsapp-btn');
+    if (!clickable) return;
+
+    const rect = clickable.getBoundingClientRect();
+    const circle = document.createElement('span');
+    const diameter = Math.max(rect.width, rect.height);
+    const radius = diameter / 2;
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - rect.left - radius}px`;
+    circle.style.top = `${e.clientY - rect.top - radius}px`;
+    circle.classList.add('btn-ripple-wave');
+
+    const existingRipple = clickable.querySelector('.btn-ripple-wave');
+    if (existingRipple) existingRipple.remove();
+
+    clickable.style.position = clickable.style.position || 'relative';
+    clickable.style.overflow = 'hidden';
+    clickable.appendChild(circle);
+  });
 });

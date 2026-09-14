@@ -127,10 +127,115 @@ ul {
 }
 
 .gold-gradient-text {
-  background: var(--color-gold-gradient);
+  background: linear-gradient(
+    120deg,
+    #B8860B 0%,
+    #E5BD68 25%,
+    #FFF6D1 50%,
+    #D4A64A 75%,
+    #996515 100%
+  );
+  background-size: 250% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
+  animation: goldTextFlow 7s ease-in-out infinite;
+}
+
+@keyframes goldTextFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --------------------------------------------------------------------------
+   CINEMATIC AMBIENT CURSOR GLOW (DESKTOP TORCH)
+   -------------------------------------------------------------------------- */
+.cursor-ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 440px;
+  height: 440px;
+  margin-top: -220px;
+  margin-left: -220px;
+  background: radial-gradient(circle, rgba(212, 166, 74, 0.11) 0%, rgba(212, 166, 74, 0.03) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate3d(-1000px, -1000px, 0);
+  transition: opacity 0.4s ease;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+@media (pointer: coarse) {
+  .cursor-ambient-glow {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CINEMATIC SCROLL REVEAL (FILM BLUR-TO-FOCUS & ELEVATION)
+   -------------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+  filter: blur(6px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* --------------------------------------------------------------------------
+   3D CARD PHYSICS & SPECULAR LIGHT SHEEN
+   -------------------------------------------------------------------------- */
+.category-card,
+.electrician-card,
+.feature-item-card,
+.review-card,
+.store-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+  position: relative;
+}
+
+.tilt-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+  mix-blend-mode: overlay;
+}
+
+/* Tactile Micro-Haptic Click Wave */
+.btn-ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: rippleScale 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleScale {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -506,6 +611,39 @@ ul {
   100% { transform: rotate(-16deg) translateY(-10px); }
 }
 
+/* Volumetric Architectural Light Beam */
+.hero-light-beam {
+  position: absolute;
+  top: -120px;
+  left: 26%;
+  width: 550px;
+  height: 850px;
+  background: radial-gradient(ellipse at top, rgba(212, 166, 74, 0.2) 0%, rgba(212, 166, 74, 0.05) 45%, transparent 75%);
+  transform: rotate(-25deg);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 1;
+  animation: beamSweep 12s ease-in-out infinite alternate;
+}
+
+@keyframes beamSweep {
+  0% { transform: rotate(-28deg) translateX(-30px); opacity: 0.7; }
+  50% { opacity: 1; filter: blur(42px); }
+  100% { transform: rotate(-22deg) translateX(40px); opacity: 0.85; }
+}
+
+/* Floating Golden Filament Canvas */
+.hero-particles-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.88;
+}
+
 .hero-content-wrapper {
   position: relative;
   z-index: 2;
@@ -618,6 +756,69 @@ ul {
 
 .btn-hero-secondary:hover svg {
   stroke: var(--color-gold) !important;
+}
+
+/* --------------------------------------------------------------------------
+   CINEMATIC HERO METRIC STATS
+   -------------------------------------------------------------------------- */
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number-wrap {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-primary);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-white);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-suffix {
+  color: var(--color-gold);
+  font-size: 22px;
+  margin-left: 2px;
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 640px) {
+  .hero-stats-row {
+    gap: 16px;
+    margin-top: 26px;
+    padding-top: 18px;
+  }
+  .stat-number-wrap {
+    font-size: 23px;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+  }
 }
 
 /* Elegant Cursive Script Accent on the right */
@@ -862,6 +1063,27 @@ ul {
   background: radial-gradient(circle, rgba(212, 166, 74, 0.14) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
+}
+
+/* Luxury Conic Laser Rim Sweep */
+.electrician-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(212, 166, 74, 0.9) 90deg, transparent 180deg, rgba(212, 166, 74, 0.45) 270deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: conicBorderSweep 8s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes conicBorderSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .electrician-info {
@@ -2386,5 +2608,26 @@ ul {
 
 [data-theme="dark"] .drawer-ctas .btn-hero-secondary svg {
   stroke: #FFFFFF !important;
+}
+
+[data-theme="dark"] .cursor-ambient-glow {
+  background: radial-gradient(circle, rgba(212, 166, 74, 0.16) 0%, rgba(212, 166, 74, 0.05) 45%, transparent 70%);
+}
+
+/* --------------------------------------------------------------------------
+   ACCESSIBILITY & REDUCED MOTION PREFERENCES
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }
 
